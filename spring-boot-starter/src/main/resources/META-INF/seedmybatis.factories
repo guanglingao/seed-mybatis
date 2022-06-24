@@ -1,0 +1,2 @@
+classSearch=org.seed.mybatis.springboot.spi.SpringClassSearch
+mapperBuilder=org.seed.mybatis.springboot.spi.SpringContextMapperBuilder

@@ -1,0 +1,89 @@
+package ${context.packageName}.configuration;
+
+
+
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.support.WebBindingInitializer;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Date;
+import java.beans.PropertyEditorSupport;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.format.DateTimeFormatter;
+
+
+
+
+@Component
+public class RequestParamHandler implements WebBindingInitializer {
+    @Override
+    public void initBinder(WebDataBinder webDataBinder) {
+        webDataBinder.registerCustomEditor(Date.class, new DateDiscern());
+        webDataBinder.registerCustomEditor(LocalDate.class, new LocalDateDiscern());
+        webDataBinder.registerCustomEditor(LocalTime.class, new LocalTimeDiscern());
+        webDataBinder.registerCustomEditor(LocalDateTime.class, new LocalDateTimeDiscern());
+    }
+}
+
+class DateDiscern extends PropertyEditorSupport {
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        Date date = null;
+        try {
+            date = format.parse(text);
+        } catch (ParseException e0) {
+            format = new SimpleDateFormat("yyyy-MM-dd");
+            try {
+                date = format.parse(text);
+            } catch (ParseException e1) {
+            }
+        }
+        setValue(date);
+    }
+}
+
+class LocalDateDiscern extends PropertyEditorSupport {
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        try {
+            LocalDate localDate = LocalDate.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd"));
+            setValue(localDate);
+        }catch (Exception e){
+
+        }
+    }
+}
+
+
+class LocalDateTimeDiscern extends PropertyEditorSupport {
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        try{
+            LocalDateTime localDateTime = LocalDateTime.parse(text, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+            setValue(localDateTime);
+        }catch (Exception e){
+
+        }
+
+    }
+}
+
+class LocalTimeDiscern extends PropertyEditorSupport {
+    @Override
+    public void setAsText(String text) throws IllegalArgumentException {
+        try{
+            LocalTime localTime = LocalTime.parse(text, DateTimeFormatter.ofPattern("HH:mm:ss"));
+            setValue(localTime);
+        }catch (Exception e){
+
+        }
+
+    }
+}
+
+
+

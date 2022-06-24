@@ -1,0 +1,33 @@
+package ${context.packageName}.configuration;
+
+import lombok.extern.slf4j.Slf4j;
+import javax.servlet.*;
+import javax.servlet.annotation.WebFilter;
+import java.io.IOException;
+import org.springframework.context.annotation.Configuration;
+
+
+
+
+
+@Configuration
+@WebFilter(filterName = "securityFilter",urlPatterns = "/*")
+@Slf4j
+public class SecurityFilter implements Filter {
+
+    @Override
+    public void init(FilterConfig filterConfig){
+        log.debug("过滤器（SecurityFilter）已初始化");
+    }
+
+    @Override
+    public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+        filterChain.doFilter(servletRequest,servletResponse);
+        log.debug("正在执行过滤");
+    }
+
+    @Override
+    public void destroy() {
+        log.debug("过滤器（SecurityFilter）已销毁");
+    }
+}

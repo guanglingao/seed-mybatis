@@ -1,0 +1,67 @@
+package ${context.packageName}.api;
+
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestParam;
+import ${context.packageName}.dto.*;
+import org.seed.commons.*;
+
+
+@FeignClient(name = "${serviceName}")
+public interface ${context.javaBeanName}Api {
+
+    String basePath = "export/${table.tableName}";
+
+    /**
+     * 分页查询
+     *
+     * @param pageParamDto
+     * @return
+     */
+    @GetMapping(basePath + "/page")
+    PageResultDto<${context.javaBeanName}Dto> page(@RequestParam("pageParamDto")PageParamDto pageParamDto);
+
+
+    /**
+     * 新增记录
+     *
+     * @param ${context.javaBeanNameLF}Dto
+     * @return
+     */
+    @PostMapping(basePath + "/save")
+    ${pk.javaTypeBox} save(@RequestParam("${context.javaBeanNameLF}Dto")${context.javaBeanName}Dto ${context.javaBeanNameLF}Dto);
+
+
+
+    /**
+     * 修改记录
+     *
+     * @param ${context.javaBeanNameLF}Dto 表单数据
+     * @return
+     */
+    @PutMapping(basePath + "/update")
+    int update(@RequestParam("${context.javaBeanNameLF}Dto") ${context.javaBeanName}Dto ${context.javaBeanNameLF}Dto);
+
+
+    /**
+     * 删除记录
+     *
+     * @param id 主键id
+     * @return
+     */
+    @DeleteMapping(basePath + "/delete")
+    int delete(@RequestParam("id") ${pk.javaTypeBox} id);
+
+
+
+    /**
+     * 根据ID查询
+     *
+     * @param id 主键id
+     * @return
+     */
+    @GetMapping(basePath + "/get")
+    ${context.javaBeanName}Dto get(@RequestParam("id") ${pk.javaTypeBox} id);
+
+
+}

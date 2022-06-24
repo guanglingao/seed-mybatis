@@ -1,0 +1,24 @@
+## filename=${context.javaBeanName}Column.java, folder=entity
+package ${context.packageName}.dao.entity;
+
+
+/**
+ * ${table.tableName}表字段映射关系<br>
+ * 使用方式：
+ * <pre>
+ * {@literal
+ * Query query = new Query().eq(TUserColumn.id, 6);
+ * TUser tUser = mapper.getBySpecifiedColumns(Arrays.asList(TUserColumn.id, TUserColumn.username), query);
+ * }
+ * </pre>
+ *
+ * @author ${author}
+ * @date ${dateNow}
+ */
+public interface ${context.javaBeanName}Column {
+#foreach($column in $columns)
+	/** ${column.comment} */
+	String ${column.columnName} = "${column.columnName}";
+    
+#end
+}

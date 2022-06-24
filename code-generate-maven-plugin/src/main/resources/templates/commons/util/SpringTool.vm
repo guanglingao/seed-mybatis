@@ -1,0 +1,67 @@
+package ${context.packageName}.util;
+
+import org.springframework.context.ApplicationContext;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
+public class SpringTool {
+
+    private static ApplicationContext context;
+
+    public static void setApplicationContext(ApplicationContext applicationContext) {
+        SpringTool.context = applicationContext;
+    }
+
+    /**
+     * 通过字节码获取
+     *
+     * @param beanClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(Class<T> beanClass) {
+        return context.getBean(beanClass);
+    }
+
+    /**
+     * 通过BeanName获取
+     *
+     * @param beanName
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(String beanName) {
+        return (T) context.getBean(beanName);
+    }
+
+
+    /**
+     * 查询指定类型的bean
+     *
+     * @param beanClass
+     * @param <T>
+     * @return
+     */
+    public static <T> List<T> getBeanOfType(Class<T> beanClass) {
+        Map<String, T> map = context.getBeansOfType(beanClass);
+        if (map == null || map.size() == 0) {
+            return null;
+        }
+        return map.entrySet().stream().map(o -> o.getValue()).collect(Collectors.toList());
+    }
+
+    /**
+     * 通过beanName和字节码获取
+     *
+     * @param name
+     * @param beanClass
+     * @param <T>
+     * @return
+     */
+    public static <T> T getBean(String name, Class<T> beanClass) {
+        return context.getBean(name, beanClass);
+    }
+
+
+}

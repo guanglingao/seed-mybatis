@@ -1,0 +1,18 @@
+## filename=${context.javaBeanName}Mapper.java, folder=mapper
+package ${context.packageName}.dao.mapper;
+
+import org.seed.mybatis.core.mapper.CrudMapper;
+import ${context.packageName}.dao.entity.${context.javaBeanName};
+
+/**
+ * 表名：${table.tableName}
+#if("$!{table.comment}" != "")
+ * 备注：${table.comment}
+#end
+ *
+ * @author ${author}
+ * @date ${dateNow}
+ */
+public interface ${context.javaBeanName}Mapper extends CrudMapper<${context.javaBeanName}, ${pk.fieldTypeBox}> {
+	
+}

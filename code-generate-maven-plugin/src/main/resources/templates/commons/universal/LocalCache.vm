@@ -1,0 +1,75 @@
+package ${context.packageName}.universal;
+
+
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
+import com.github.benmanes.caffeine.cache.RemovalListener;
+import lombok.extern.slf4j.Slf4j;
+import java.util.concurrent.TimeUnit;
+
+
+
+@Slf4j
+public class LocalCache {
+
+    public LocalCache(){
+        if(LocalCache.localCache ==null){
+            LocalCache.localCache = init();
+        }
+    }
+
+    public LocalCache(int timeout){
+        this.timeout = timeout;
+        if(LocalCache.localCache ==null){
+            LocalCache.localCache = init();
+        }
+    }
+
+
+    private static com.github.benmanes.caffeine.cache.Cache<String,Object> localCache;
+    private static volatile int timeout = 6;
+
+    static {
+        localCache = init();
+    }
+
+    public void put(String key,Object value){
+        if(key == null || value == null){
+            return ;
+        }
+        LocalCache.localCache.put(key,value);
+        log.debug("====> 已经设置缓存");
+    }
+
+    public Object get(String key){
+        try{
+            Object val = LocalCache.localCache.getIfPresent(key);
+            if(val != null){
+
+            }
+            return val;
+        }catch (Exception e){
+            return null;
+        }
+    }
+
+    private static com.github.benmanes.caffeine.cache.Cache<String,Object> init(){
+        return Caffeine.newBuilder().initialCapacity(70).maximumSize(700)
+                .expireAfterWrite(timeout,TimeUnit.SECONDS)
+                .removalListener(new RemovalListener<Object, Object>() {
+                    @Override
+                    public void onRemoval(Object o,Object o2,RemovalCause removalCause) {
+
+                    }
+                })
+                .build(new CacheLoader<String, Object>() {
+                    @Override
+                    public String load(String s) throws Exception {
+                        return null;
+                    }
+                });
+    }
+
+
+}

@@ -1,0 +1,21 @@
+## filename=${context.javaBeanName}Service.java, folder=service
+package ${context.packageName}.service;
+
+import org.seed.mybatis.core.support.IService;
+import ${context.packageName}.dao.entity.${context.javaBeanName};
+import org.springframework.stereotype.Service;
+
+
+
+/**
+#if("$!{table.comment}" != "")
+ * ${table.comment}业务逻辑
+#end
+ *
+ * @author ${author}
+ * @date ${dateNow}
+ */
+@Service
+public class ${context.javaBeanName}Service implements IService<${context.javaBeanName}, ${pk.fieldTypeBox}> {
+
+}

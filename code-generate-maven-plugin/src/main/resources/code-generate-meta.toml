@@ -1,0 +1,25 @@
+[application]
+## 作者
+author = "guanglin.gao"
+## 项目根路径
+basePackage = "com.example"
+## 服务名称
+serviceName = "member"
+
+[database]
+## 数据库连接参数
+driverClass = "org.postgresql.Driver"
+jdbcUrl = "jdbc:postgresql://localhost:5432/balance"
+userName = "postgres"
+password = "123456"
+
+[tables]
+## 表设置
+# 包含
+include = "*"
+# 排除
+exclude = "user,foo,bar"
+# 生成类名去除前缀
+prefix = "t_,v_"
+# 生成类名去除后缀
+suffix = "^_[0-9]*$,__"

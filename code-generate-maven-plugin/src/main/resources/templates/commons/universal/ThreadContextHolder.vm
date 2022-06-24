@@ -1,0 +1,24 @@
+package ${context.packageName}.universal;
+
+public class ThreadContextHolder {
+
+    private static final ThreadLocal<String> threadError = new ThreadLocal<>();
+
+    /**
+     * 设置当前线程错误
+     *
+     * @param error 错误信息
+     */
+    public static void setCurrentError(String error){
+        threadError.set(error);
+    }
+
+    /**
+     * 获取当前线程错误
+     */
+    public static String getCurrentError(){
+        return threadError.get();
+    }
+
+
+}

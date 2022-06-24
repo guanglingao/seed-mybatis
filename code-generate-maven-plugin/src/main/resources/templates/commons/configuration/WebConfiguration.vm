@@ -1,0 +1,89 @@
+package ${context.packageName}.configuration;
+
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.StringHttpMessageConverter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.CorsFilter;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import java.nio.charset.Charset;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
+import java.util.List;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import javax.annotation.Resource;
+
+
+@Configuration
+public class WebConfiguration implements WebMvcConfigurer {
+
+
+    @Resource
+    private GlobalInterceptor globalInterceptor;
+
+
+    /**
+     * 拦截器配置
+     *
+     * @param registry
+     */
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(globalInterceptor)
+                .addPathPatterns(globalInterceptor.getIncludePathPatterns())
+                .excludePathPatterns(globalInterceptor.getExcludePathPatterns());
+    }
+
+
+    /**
+     * 跨域资源共享
+     *
+     * @return
+     */
+    @Bean
+    public CorsFilter corsFilter(){
+        CorsConfiguration corsConfiguration = new CorsConfiguration();
+        corsConfiguration.addAllowedOriginPattern("*");
+        corsConfiguration.setAllowCredentials(true);
+        corsConfiguration.addAllowedHeader("*");
+        corsConfiguration.addAllowedMethod("*");
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**",corsConfiguration);
+        return new CorsFilter(source);
+    }
+
+
+    /**
+     * 设置统一输出编码
+     *
+     * @param converters
+     */
+    @Override
+    public void configureMessageConverters(List<HttpMessageConverter<?>> converters) {
+        converters.add(new StringHttpMessageConverter(Charset.forName("UTF-8")));
+        converters.add(new MappingJackson2HttpMessageConverter());
+    }
+
+
+
+    /**
+     * 启用RedisTemplate
+     */
+    @Bean
+    @ConditionalOnBean(RedisConnectionFactory.class)
+    public RedisTemplate<String,Object> redisTemplate(RedisConnectionFactory redisConnectionFactory) {
+        RedisTemplate<String, Object> redis = new RedisTemplate();
+        redis.setConnectionFactory(redisConnectionFactory);
+        redis.afterPropertiesSet();
+        return redis;
+    }
+
+
+
+}

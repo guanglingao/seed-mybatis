@@ -1,0 +1,76 @@
+package ${context.packageName}.util;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.security.MessageDigest;
+
+public class MD5 {
+
+    /**
+     * 计算字符串MD5值
+     *
+     * @param origin
+     * @return
+     */
+    public static String digest(String origin){
+        origin = origin + salt;
+        try {
+            char[] str;
+            MessageDigest mdTemp = MessageDigest.getInstance("MD5");
+            mdTemp.update(origin.getBytes());
+            byte[] md = mdTemp.digest();
+            int j = md.length;
+            str = new char[j * 2];
+            int k = 0;
+            for (int i = 0; i < j; i++) {
+                byte byte0 = md[i];
+                str[k++] = hexDigits[byte0 >>> 4 & 0xf];
+                str[k++] = hexDigits[byte0 & 0xf];
+            }
+            return new String(str);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static final char[] hexDigits = {'3', '8', '2', 'b', '4', 'f', '7', 'd', '1',
+            'e', 'c', '0', 'a', '6', '9', '5'};
+
+    private final static String salt="&)#%!@??↑↑↑";
+
+
+    /**
+     * 根据文件计算MD5值
+     *
+     * @param file
+     * @return
+     */
+    public static String getMD5ByFile(File file) {
+        try (FileInputStream fis = new FileInputStream(file)){
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] buffer = new byte[1024];
+            int length = -1;
+            while ((length = fis.read(buffer)) != -1) {
+                md.update(buffer, 0, length);
+            }
+            return bytesToString(md.digest());
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+
+
+    private static String bytesToString(byte[] data) {
+        char[] temp = new char[data.length * 2];
+        for (int i = 0; i < data.length; i++) {
+            byte b = data[i];
+            temp[i * 2] = hexDigits[b >>> 4 & 0x0f];
+            temp[i * 2 + 1] = hexDigits[b & 0x0f];
+        }
+        return new String(temp);
+    }
+
+
+}

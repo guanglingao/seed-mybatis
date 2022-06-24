@@ -1,0 +1,36 @@
+## filename=${context.javaBeanName}Dto.java, folder=dto
+package ${context.packageName}.dto;
+
+#if(${table.hasDateField})
+import java.util.Date;
+#end
+#if(${table.hasLocalDateField})
+import java.time.LocalDate;
+#end
+#if(${table.hasLocalDateTimeField})
+import java.time.LocalDateTime;
+#end
+#if(${table.hasBigDecimalField})
+import java.math.BigDecimal;
+#end
+import lombok.Data;
+import java.io.Serializable;
+
+/**
+#if("$!{table.comment}" != "")
+ * ${table.comment}
+#end
+ *
+ * @author ${author}
+ * @date ${dateNow}
+ */
+@Data
+public class ${context.javaBeanName}Dto implements Serializable {
+
+#foreach($column in $columns)
+    /** #if("$!{column.comment}" != "")${column.comment},#end 数据库字段：${column.columnName} */
+    private ${column.javaTypeBox} ${column.javaFieldName};
+
+#end
+
+}

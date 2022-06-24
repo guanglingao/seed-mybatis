@@ -1,0 +1,10 @@
+{
+  "outPath": "./src/main/resources/static/doc",
+  "isStrict": false,
+  "projectName": "${serviceName}",
+  "appToken": "fa58a3cf882a49dbaf598262d05927c4",
+  "openUrl": "http://localhost:7700/api",
+  "debugEnvName":"dev",
+  "replace": true,
+  "debugEnvUrl":"http://127.0.0.1:9090"
+}

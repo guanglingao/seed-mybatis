@@ -1,0 +1,45 @@
+## filename=${context.javaBeanName}.java, folder=entity
+package ${context.packageName}.dao.entity;
+
+#if(${table.hasDateField})
+import java.util.Date;
+#end
+#if(${table.hasLocalDateField})
+import java.time.LocalDate;
+#end
+#if(${table.hasLocalDateTimeField})
+import java.time.LocalDateTime;
+#end
+#if(${table.hasBigDecimalField})
+import java.math.BigDecimal;
+#end
+
+import org.seed.mybatis.core.annotation.PrimaryKey;
+import org.seed.mybatis.core.annotation.KeyStrategy;
+import org.seed.mybatis.core.annotation.Table;
+import lombok.Data;
+
+
+/**
+ * 表名：${table.tableName}
+#if("$!{table.comment}" != "")
+ * 备注：${table.comment}
+#end
+ *
+ * @author ${author}
+ * @date ${dateNow}
+ */
+@Table(name = "${table.tableName}", key = @PrimaryKey(name = "${pk.columnName}", strategy = KeyStrategy.NONE))
+@Data
+public class ${context.javaBeanName} {
+
+#foreach($column in $columns)
+    /** #if("$!{column.comment}" != "")${column.comment},#end 数据库字段：${column.columnName} */
+#if(${column.columnName} == "is_deleted")
+    @Column(logicDelete = true)
+#end
+    private ${column.javaTypeBox} ${column.javaFieldName};
+
+#end
+
+}

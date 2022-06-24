@@ -1,0 +1,97 @@
+## filename=${context.javaBeanName}Controller.java, folder=controller
+package ${context.packageName}.export;
+
+
+import org.seed.mybatis.core.query.Query;
+import org.seed.mybatis.core.query.param.PageParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.stereotype.Controller;
+import org.seed.commons.*;
+import org.springframework.beans.BeanUtils;
+import ${context.packageName}.dao.entity.${context.javaBeanName};
+import ${context.packageName}.service.${context.javaBeanName}Service;
+import ${context.packageName}.dto.*;
+
+/**
+#if("$!{table.comment}" != "")
+ * ${table.comment}API
+#end
+ * @author ${author}
+ * @date ${dateNow}
+ */
+@Controller
+@RequestMapping("export/${table.tableName}")
+public class ${context.javaBeanName}Export {
+
+    @Autowired
+    private ${context.javaBeanName}Service ${context.javaBeanNameLF}Service;
+
+    /**
+     * 分页查询
+     *
+     * @param pageParamDto
+     * @return
+     */
+    @GetMapping("/page")
+    public PageResultDto<${context.javaBeanName}Dto> page(@RequestParam("pageParamDto") PageParamDto pageParamDto) {
+        PageParam pageParam = PageParam.fromPageParamDto(pageParamDto);
+        Query query = pageParam.toQuery();
+        return ${context.javaBeanNameLF}Service.page(query, ${context.javaBeanName}Dto::new).toPageResultDto();
+    }
+    
+    /**
+     * 新增记录
+     *
+     * @param ${context.javaBeanNameLF}Dto
+     * @return
+     */
+    @PostMapping("/save")
+    public ${pk.javaTypeBox} save(@RequestParam("${context.javaBeanNameLF}Dto") ${context.javaBeanName}Dto ${context.javaBeanNameLF}Dto) {
+        ${context.javaBeanName} ${context.javaBeanNameLF} = new ${context.javaBeanName}();
+        BeanUtils.copyProperties(${context.javaBeanNameLF}Dto, ${context.javaBeanNameLF});
+        ${context.javaBeanNameLF}Service.saveIgnoreNull(${context.javaBeanNameLF});
+        // 返回添加后的主键值
+        return ${context.javaBeanNameLF}.getId();
+    }
+    
+    /**
+     * 修改记录
+     *
+     * @param ${context.javaBeanNameLF}Dto 表单数据
+     * @return
+     */
+    @PutMapping("/update")
+    public int update(@RequestParam("${context.javaBeanNameLF}Dto") ${context.javaBeanName}Dto ${context.javaBeanNameLF}Dto) {
+        ${context.javaBeanName} ${context.javaBeanNameLF} = new ${context.javaBeanName}();
+        BeanUtils.copyProperties(${context.javaBeanNameLF}Dto, ${context.javaBeanNameLF});
+        return ${context.javaBeanNameLF}Service.updateIgnoreNull(${context.javaBeanNameLF});
+    }
+     
+    /**
+     * 删除记录
+     *
+     * @param id 主键id
+     * @return
+     */
+    @DeleteMapping("/delete")
+    public int delete(@RequestParam("id") ${pk.javaTypeBox} id) {
+        return ${context.javaBeanNameLF}Service.deleteById(id);
+    }
+
+
+    /**
+     * 根据ID查询
+     *
+     * @param id 主键id
+     * @return
+     */
+    @GetMapping("/get")
+    public ${context.javaBeanName}Dto get(@RequestParam("id") ${pk.javaTypeBox} id) {
+        ${context.javaBeanName} ${context.javaBeanNameLF} = ${context.javaBeanNameLF}Service.getById(id);
+        ${context.javaBeanName}Dto rst = new ${context.javaBeanName}Dto();
+        BeanUtils.copyProperties(${context.javaBeanNameLF}, rst);
+        return rst;
+    }
+    
+}

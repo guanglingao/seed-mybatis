@@ -1,0 +1,226 @@
+package ${context.packageName}.util;
+
+
+import okhttp3.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import java.util.Iterator;
+import java.util.Map;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+
+
+public class HttpClient {
+
+
+    private static final Logger log = LoggerFactory.getLogger(HttpClient.class);
+
+
+    private static String doRequest(Request request) {
+        Response response = null;
+        try {
+            okhttp3.OkHttpClient okHttpClient = SpringTool.getBean(okhttp3.OkHttpClient.class);
+            response = okHttpClient.newCall(request).execute();
+            int status = response.code();
+            if (response.isSuccessful()) {
+                return response.body().string();
+            }
+            log.debug("okhttp3 response status: {}",status);
+        } catch (Exception e) {
+            log.error("okhttp3 request error: {}", e.getMessage());
+        } finally {
+            if (response != null) {
+                response.close();
+            }
+        }
+        return null;
+    }
+
+
+    public static String get(String url, Map<String, String> queries) {
+        StringBuffer sb = buildGetString(url, queries);
+        Request request = new Request.Builder()
+                .url(sb.toString())
+                .build();
+        return doRequest(request);
+    }
+
+
+    private static StringBuffer buildGetString(String url, Map<String, String> queries) {
+        StringBuffer sb = new StringBuffer(url);
+        if (queries != null && queries.keySet().size() > 0) {
+            boolean firstFlag = true;
+            Iterator iterator = queries.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry entry = (Map.Entry<String, String>) iterator.next();
+                if (firstFlag) {
+                    sb.append("?" + entry.getKey() + "=" + entry.getValue());
+                    firstFlag = false;
+                } else {
+                    sb.append("&" + entry.getKey() + "=" + entry.getValue());
+                }
+            }
+        }
+        return sb;
+    }
+
+
+    public static String post(String url, Map<String, String> params) {
+        FormBody.Builder builder = new FormBody.Builder();
+        if (params != null && params.keySet().size() > 0) {
+            for (String key : params.keySet()) {
+                builder.add(key, params.get(key));
+            }
+        }
+        Request request = new Request.Builder()
+                .url(url)
+                .post(builder.build())
+                .build();
+        return doRequest(request);
+    }
+
+
+    public static String postJson(String url, String jsonParams) {
+        RequestBody requestBody = RequestBody.create(jsonParams, MediaType.parse("application/json; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        return doRequest(request);
+    }
+
+
+    public static String postXml(String url, String xml) {
+        RequestBody requestBody = RequestBody.create(xml, MediaType.parse("application/xml; charset=utf-8"));
+        Request request = new Request.Builder()
+                .url(url)
+                .post(requestBody)
+                .build();
+        return doRequest(request);
+    }
+
+
+
+
+    /**
+     * 获取指定key的值
+     *
+     * @param key
+     * @param request
+     * @return
+     */
+    public static String getCookie(String key, HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if(cookies==null) {
+            return null;
+        }
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equalsIgnoreCase(key)) {
+                return cookie.getValue();
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 设置cookie值
+     *
+     * @param key
+     * @param value
+     * @param minutes 过期时间，单位：分钟
+     * @param response
+     */
+    public static void setCookie(String key, String value, int minutes, HttpServletResponse response) {
+        Cookie cookie = new Cookie(key,value);
+        cookie.setMaxAge(minutes*60);
+        cookie.setPath("/");
+        response.addCookie(cookie);
+    }
+
+    /**
+     * 查询IP地址
+     *
+     * @param request
+     * @return
+     */
+    public static String getRequestIp(HttpServletRequest request) {
+        if(request==null){
+            return null;
+        }
+        String ip = null;
+        String ipAddresses = request.getHeader("X-Forwarded-For");
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("Proxy-Client-IP");
+        }
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("HTTP_CLIENT_IP");
+        }
+        if (ipAddresses == null || ipAddresses.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ipAddresses = request.getHeader("X-Real-IP");
+        }
+        if (ipAddresses != null && ipAddresses.length() != 0) {
+            ip = ipAddresses.split(",")[0];
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ipAddresses)) {
+            ip = request.getRemoteAddr();
+        }
+        return ip;
+    }
+
+    /**
+     * 查询当前请求的父路径
+     *
+     * @param request
+     * @return
+     */
+    public static String getRequestContextPath(HttpServletRequest request) {
+        return request.getScheme()+"://"+request.getServerName()+":"+request.getServerPort()+request.getContextPath();
+    }
+
+
+
+    /**
+     * 下载文件
+     *
+     * @param filePath 文件在服务器中的路径
+     * @param response
+     * @param fileName 保存后的文件名
+     */
+    public static void downloadFile(String filePath, HttpServletResponse response, String fileName) {
+        try {
+            response.reset();
+            BufferedInputStream bis = null;
+            BufferedOutputStream bos = null;
+            long fileLength = new File(filePath).length();
+            response.setHeader("Content-Disposition",
+                    "attachment; filename=" + new String(fileName.getBytes("UTF-8"), "ISO-8859-1"));
+            response.setHeader("Content-Length", String.valueOf(fileLength));
+            response.setHeader("Content-Type","application/octet-stream");
+            response.setContentType("application/octet-stream");
+            bis = new BufferedInputStream(new FileInputStream(filePath));
+            bos = new BufferedOutputStream(response.getOutputStream());
+            byte[] buff = new byte[1024];
+            int bytesRead;
+            while (-1 != (bytesRead = bis.read(buff, 0, buff.length))) {
+                bos.write(buff, 0, bytesRead);
+            }
+            bos.flush();
+            bos.close();
+            bis.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+
+
+
+}

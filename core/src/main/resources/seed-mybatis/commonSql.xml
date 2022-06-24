@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="common">
+
+    <sql id="orderBy">
+        <if test="query.sortable">
+            ORDER BY ${query.order}
+        </if>
+    </sql>
+    <sql id="limit">
+        <if test="!query.isQueryAll">
+            LIMIT #{query.start},#{query.limit}
+        </if>
+    </sql>
+
+    <sql id="join">
+        <if test="query.joinExpressions!=null">
+            <foreach collection="query.joinExpressions" item="joinExpressionsItem">
+                ${joinExpressionsItem.joinSql}
+            </foreach>
+        </if>
+    </sql>
+    <sql id="condition">
+        <if test="query.expressions.size > 0">
+            <foreach collection="query.expressions" item="expressionItem">
+                <if test="expressionItem.type == 0">
+                    ${expressionItem.joint}
+                    ${expressionItem.column}
+                    ${expressionItem.equal}
+                    #{expressionItem.value}
+                </if>
+                <if test="expressionItem.type == 1">
+                    ${expressionItem.joint}
+                    ${expressionItem.column}
+                    ${expressionItem.equal}
+                    <foreach collection="expressionItem.value" item="value" open="(" separator="," close=")">
+                        #{value}
+                    </foreach>
+                </if>
+                <if test="expressionItem.type == 2">
+                    ${expressionItem.joint}
+                    ${expressionItem.column} BETWEEN #{expressionItem.startValue} AND #{expressionItem.endValue}
+                </if>
+                <if test="expressionItem.type == 3">
+                    ${expressionItem.joint}
+                    (${expressionItem.sql})
+                </if>
+            </foreach>
+        </if>
+    </sql>
+
+    <!-- 条件语句块 -->
+    <sql id="where">
+        <include refid="common.join"/>
+        <where>
+            <include refid="common.condition"/>
+        </where>
+    </sql>
+
+    <sql id="all">
+        <include refid="common.where"/>
+        <include refid="common.orderBy"/>
+        <include refid="common.limit"/>
+    </sql>
+
+
+</mapper>

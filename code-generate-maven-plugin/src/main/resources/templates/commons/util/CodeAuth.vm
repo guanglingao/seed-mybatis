@@ -1,0 +1,56 @@
+package ${context.packageName}.util;
+
+
+/**
+ * 按照数字码配置权限
+ *
+ * <p>权限码标识: 2^0、2^1、2^2、2^3 ...</p>
+ */
+public class CodeAuth {
+
+    /**
+     * 构建权限码
+     *
+     * @param values
+     * @return
+     */
+    public static int buildAuth(int... values) {
+        int authority = 0;// 初始化权限值为0
+        for (int i = 0; i < values.length; i++)
+            authority = addAuth(authority, values[i]);
+        return authority;
+    }
+
+    /**
+     * 校验当前权限value
+     */
+    public static boolean checkAuth(int authority, int value) {
+        return (authority & value) == value;
+    }
+
+    /**
+     * 删除权限
+     */
+    public static int delAuth(int authority, int value) {
+        return authority & (~value);
+    }
+
+    /**
+     * 新增权限
+     */
+    public static int addAuth(int authority, int value) {
+        return authority |= value;
+    }
+
+    /**
+     * 获取指数值
+     *
+     * @param value
+     * @return
+     */
+    public static int getExponent(int value) {
+        return (int) (Math.log(value) / Math.log(2));
+    }
+
+
+}

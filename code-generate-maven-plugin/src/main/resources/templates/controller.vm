@@ -1,0 +1,95 @@
+## filename=${context.javaBeanName}Controller.java, folder=controller
+package ${context.packageName}.controller;
+
+import org.seed.mybatis.core.PageInfo;
+import org.seed.mybatis.core.query.Query;
+import org.seed.mybatis.core.query.param.PageParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.seed.commons.Result;
+import ${context.packageName}.dao.entity.${context.javaBeanName};
+import ${context.packageName}.service.${context.javaBeanName}Service;
+
+/**
+#if("$!{table.comment}" != "")
+ * ${table.comment}接口
+#end
+ * @author ${author}
+ * @date ${dateNow}
+ */
+@RestController
+@RequestMapping("${table.tableName}")
+public class ${context.javaBeanName}Controller {
+
+    @Autowired
+    private ${context.javaBeanName}Service ${context.javaBeanNameLF}Service;
+
+    /**
+     * 分页查询
+     *
+     * @param param 分页参数
+     * @return
+     */
+    @GetMapping("/page")
+    public Result<PageInfo<${context.javaBeanName}>> page(PageParam param) {
+        Query query = param.toQuery();
+        PageInfo<${context.javaBeanName}> pageInfo = ${context.javaBeanNameLF}Service.page(query);
+        return Result.ok(pageInfo);
+    }
+    
+    /**
+     * 新增记录
+     *
+     * @param ${context.javaBeanNameLF}
+     * @return
+     */
+    @PostMapping("/save")
+    public Result<${pk.javaTypeBox}> save(${context.javaBeanName} ${context.javaBeanNameLF}) {
+        ${context.javaBeanNameLF}Service.saveIgnoreNull(${context.javaBeanNameLF});
+        // 返回添加后的主键值
+        return Result.ok(${context.javaBeanNameLF}.getId());
+    }
+    
+    /**
+     * 修改记录
+     *
+     * @param ${context.javaBeanNameLF} 表单数据
+     * @return
+     */
+    @PutMapping("/update")
+    public Result<Void> update(${context.javaBeanName} ${context.javaBeanNameLF}) {
+        ${context.javaBeanNameLF}Service.updateIgnoreNull(${context.javaBeanNameLF});
+        return Result.ok();
+    }
+     
+    /**
+     * 删除记录
+     *
+     * @param id 主键id
+     * @return
+     */
+    @DeleteMapping("/delete")
+    public Result<Void> delete(${pk.javaTypeBox} id) {
+        ${context.javaBeanNameLF}Service.deleteById(id);
+        return Result.ok();
+    }
+
+
+    /**
+     * 根据ID查询
+     *
+     * @param id 主键id
+     * @return
+     */
+    @GetMapping("/get")
+    public Result<${context.javaBeanName}> get(${pk.javaTypeBox} id) {
+        ${context.javaBeanName} ${context.javaBeanNameLF} = ${context.javaBeanNameLF}Service.getById(id);
+        return Result.ok(${context.javaBeanNameLF});
+    }
+    
+}

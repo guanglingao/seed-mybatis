@@ -1,0 +1,3 @@
+classSearch=org.seed.mybatis.core.ext.spi.impl.MapperClassSearch
+mapperBuilder=org.seed.mybatis.core.ext.spi.impl.DefaultMapperBuilder
+beanExecutor=org.seed.mybatis.core.ext.spi.impl.DefaultBeanExecutor
