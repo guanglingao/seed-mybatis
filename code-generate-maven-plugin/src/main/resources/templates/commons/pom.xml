@@ -31,12 +31,12 @@
         <dependency>
             <groupId>org.seed</groupId>
             <artifactId>commons</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.seed.mybatis</groupId>
             <artifactId>spring-boot-starter</artifactId>
-            <version>1.1.13</version>
+            <version>1.2.10</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -152,7 +152,7 @@
                 <version>2.4.7</version>
                 <configuration>
                     <configFile>./src/main/resources/smart-doc.json</configFile>
-                    <projectName>member</projectName>
+                    <projectName>${serviceName}</projectName>
                 </configuration>
                 <executions>
                     <execution>

@@ -56,6 +56,10 @@ public class CommonsAssembler {
         commonFileMap.put("util/SpringTool.vm", "util");
 
         // 应用运行配置
+        commonFileMap.put("configuration/CurrentUser.vm", "configuration");
+        commonFileMap.put("configuration/CurrentUserAttachService.vm", "configuration");
+        commonFileMap.put("configuration/CurrentUserMethodArgumentResolver.vm", "configuration");
+        commonFileMap.put("configuration/DataSourceConfiguration.vm", "configuration");
         commonFileMap.put("configuration/EnableOpenFeign.vm", "configuration");
         commonFileMap.put("configuration/GlobalInterceptor.vm", "configuration");
         commonFileMap.put("configuration/OkhttpConfiguration.vm", "configuration");

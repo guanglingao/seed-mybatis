@@ -20,7 +20,7 @@ public class SpringContextMapperBuilder implements MapperBuilder {
         simpleName = Character.toLowerCase(simpleName.charAt(0)) + simpleName.substring(1);
         MapperRunner<T> cached = runnerMap.get(simpleName);
         if (cached != null) {
-            log.debug("Using cached bean object.");
+            log.debug("Using cached bean object: {}",simpleName);
             return cached;
         }
         ApplicationContext context = (ApplicationContext) applicationContext;

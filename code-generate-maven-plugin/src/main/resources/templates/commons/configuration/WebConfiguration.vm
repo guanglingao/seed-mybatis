@@ -10,6 +10,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import java.nio.charset.Charset;
@@ -27,6 +28,9 @@ public class WebConfiguration implements WebMvcConfigurer {
     @Resource
     private GlobalInterceptor globalInterceptor;
 
+    @Resource
+    private CurrentUserAttachService currentUserAttachService;
+
 
     /**
      * 拦截器配置
@@ -38,6 +42,15 @@ public class WebConfiguration implements WebMvcConfigurer {
         registry.addInterceptor(globalInterceptor)
                 .addPathPatterns(globalInterceptor.getIncludePathPatterns())
                 .excludePathPatterns(globalInterceptor.getExcludePathPatterns());
+    }
+
+
+    /**
+     * 当前用户处理
+     */
+    @Override
+    public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
+        resolvers.add(new CurrentUserMethodArgumentResolver(currentUserAttachService));
     }
 
 

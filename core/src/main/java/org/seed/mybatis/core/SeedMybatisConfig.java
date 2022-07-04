@@ -89,7 +89,7 @@ public class SeedMybatisConfig {
     /**
      * 开启mapper文件热部署，开启后修改mapper文件无需重启
      */
-    private boolean hotDeploy;
+    private boolean hotDeploy = true;
 
     /**
      * 级联查询忽略逻辑删除字段

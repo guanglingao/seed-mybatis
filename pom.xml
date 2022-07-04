@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.seed.mybatis</groupId>
     <artifactId>seedmybatis</artifactId>
-    <version>1.1.13</version>
+    <version>1.2.10</version>
 
     <packaging>pom</packaging>
 
@@ -25,6 +25,7 @@
         <collections.version>3.2.2</collections.version>
         <beanutils.version>1.9.4</beanutils.version>
         <commons-io.version>2.11.0</commons-io.version>
+        <jsqlparser.version>4.4</jsqlparser.version>
         <!-- build version set -->
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -110,6 +111,11 @@
                 <version>${springboot.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-starter-aop</artifactId>
+                <version>${springboot.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>io.ous</groupId>
                 <artifactId>jtoml</artifactId>
                 <version>${jtoml.version}</version>
@@ -149,6 +155,11 @@
                 <groupId>commons-beanutils</groupId>
                 <artifactId>commons-beanutils</artifactId>
                 <version>${beanutils.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.jsqlparser</groupId>
+                <artifactId>jsqlparser</artifactId>
+                <version>${jsqlparser.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

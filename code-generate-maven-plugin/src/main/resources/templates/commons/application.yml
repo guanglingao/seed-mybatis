@@ -26,10 +26,16 @@ spring:
         instance-id: ${DEMO1_INSTANCE_LOCAL:demo1}
   ## data sources
   datasource:
-    username: ${DEMO1_JDBC_USERNAME:postgres}
-    password: ${DEMO1_JDBC_PASSWORD:123456}
-    driver-class-name: org.postgresql.Driver
-    url: ${DEMO1_JDBC_URL:jdbc:postgresql://localhost:5432/postgres}
+    default:
+      username: ${OPERATOR_JDBC_USERNAME:postgres}
+      password: ${OPERATOR_JDBC_PASSWORD:123456}
+      driver-class-name: org.postgresql.Driver
+      url: ${OPERATOR_JDBC_URL:jdbc:postgresql://localhost:5432/balance}
+    other:
+      username: ${OPERATOR_JDBC_USERNAME:postgres}
+      password: ${OPERATOR_JDBC_PASSWORD:123456}
+      driver-class-name: org.postgresql.Driver
+      url: ${OPERATOR_JDBC_URL:jdbc:postgresql://localhost:5432/balance}
   main:
     allow-bean-definition-overriding: true
   ## redis

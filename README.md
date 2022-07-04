@@ -20,7 +20,7 @@
             <plugin>
                 <groupId>org.seed.mybatis</groupId>
                 <artifactId>code-generate-maven-plugin</artifactId>
-                <version>1.1.13-SNAPSHOT</version>
+                <version>1.1.14</version>
             </plugin>
         </plugins>
     </build>
@@ -302,3 +302,82 @@ int updateByMap(Map<String, Object> setBlock, Query query)
 ## [seed-mybatis语法](https://gitee.com/glin/seed-mybatis/blob/master/core/README.md)
 ## [生成接口文档](https://gitee.com/glin/seed-mybatis/blob/master/code-generate-maven-plugin/SmartDoc.md)
 ## [BeanSearcher用法](https://gitee.com/glin/seed-mybatis/blob/master/code-generate-maven-plugin/BeanSearcher.md)
+
+
+## Controller 参数解析
+
+1. 日期类型解析需要使用<code>@DateTimeFormat</code>注解
+```
+import org.springframework.format.annotation.DateTimeFormat;
+
+@DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+private Date createTime;
+```
+
+## 分库分表
+1. 分库使用Spring框架的AbstractRoutingDataSource; 配置多数据源的方式如下：
+```
+spring: 
+  datasource:
+    default:
+      username: ${OPERATOR_JDBC_USERNAME:postgres}
+      password: ${OPERATOR_JDBC_PASSWORD:123456}
+      driver-class-name: org.postgresql.Driver
+      url: ${OPERATOR_JDBC_URL:jdbc:postgresql://localhost:5432/balance}
+    other:
+      username: ${OPERATOR_JDBC_USERNAME:postgres}
+      password: ${OPERATOR_JDBC_PASSWORD:123456}
+      driver-class-name: org.postgresql.Driver
+      url: ${OPERATOR_JDBC_URL:jdbc:postgresql://localhost:5432/balance}
+```
+2. 使用代码生成工具，能够自动生成应用启动Application，需要排除数据库自动配置
+```
+@SpringBootApplication(exclude = {DataSourceAutoConfiguration.class})
+```
+3. 生成的数据源导出Bean，需要按需配置（DataSourceConfiguration）
+```
+    @Bean(name = "defaultDataSourceProperties")
+    @ConfigurationProperties(prefix = "spring.datasource.default")
+    public DataSourceProperties defaultDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean(name = "otherDataSourceProperties")
+    @ConfigurationProperties(prefix = "spring.datasource.other")
+    public DataSourceProperties otherDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+
+    @Primary
+    @Bean
+    public RoutingDataSource routingDataSource(@Qualifier("defaultDataSourceProperties") DataSourceProperties defaultDataSourceProperties,
+                                               @Qualifier("otherDataSourceProperties") DataSourceProperties otherDataSourceProperties) {
+        RoutingDataSource routingDataSource = new RoutingDataSource();
+        routingDataSource.setDefaultTargetDataSource(defaultDataSourceProperties.initializeDataSourceBuilder().build());
+        Map<Object, Object> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("default", defaultDataSourceProperties.initializeDataSourceBuilder().build());
+        dataSourceMap.put("other", otherDataSourceProperties.initializeDataSourceBuilder().build());
+        routingDataSource.setTargetDataSources(dataSourceMap);
+        return routingDataSource;
+    }
+```
+4. 注解<code>@Scatter</code>使用在方法上，<code>by</code>的值，标识按照此***参数名***进行分库分表计算，计算逻辑需自定义在<code>strategy</code>中；
+分库分表策略需实现接口<code>org.seed.mybatis.springboot.scatter.ShardingStrategy</code>
+```
+    @Scatter(by = "id",strategy = AuthenticationStrategy.class)
+    public List<Admin> listById(String id){
+        return listByColumn(AdminColumn.id,id);
+    }
+```
+5. 分库分表策略接口<code>org.seed.mybatis.springboot.scatter.ShardingStrategy</code>
+* <code>getDataSourceId</code> 获取数据源ID；与application.yml(.properties)中spring.datasource的***子级***的名称一致，并且在<code>DataSourceConfiguration</code>中也应如此配置。
+* <code>getTablePrefix</code> 表名前缀
+* <code>getTableSuffix</code> 表名后缀
+* <code>setBasis</code> 设置分库分表***基准值***，即按照此值执行数据源名称计算和表名前缀、后缀计算；应在实现类中定义变量接收此值，并在执行上述3个方法时，以此值进行计算。
+6. 分库分表逻辑和定义，应在***Service层***实现
+7. DataSourceConfiguration中，主数据源导出需使用类型<code>org.seed.mybatis.springboot.scatter.RoutingDataSource</code>
+8. 可使用命令式切换数据源
+```
+RoutingDataSourceContext.setDataSourceKey(String key);
+```
