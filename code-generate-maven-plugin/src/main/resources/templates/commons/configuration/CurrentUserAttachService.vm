@@ -21,10 +21,11 @@ public interface CurrentUserAttachService {
     /**
      * 根据key获取当前用户
      *
-     * @param key
+     * @param key 用户ID
+     * @param clazz 用户类型
      * @return
      */
-    Object getCurrentUserByKey(String key);
+    Object getCurrentUserByKey(String key, Class clazz);
 
 
     /**
