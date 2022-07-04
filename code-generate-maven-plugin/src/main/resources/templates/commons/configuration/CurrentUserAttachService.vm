@@ -1,0 +1,38 @@
+package ${context.packageName}.configuration;
+
+
+import javax.servlet.http.HttpServletRequest;
+
+/**
+ * 当前用户服务
+ */
+public interface CurrentUserAttachService {
+
+
+    /**
+     * 从HttpServletRequest中获取key
+     *
+     * @param request
+     * @return
+     */
+    Object getCurrentUserByRequest(HttpServletRequest request);
+
+
+    /**
+     * 根据key获取当前用户
+     *
+     * @param key
+     * @return
+     */
+    Object getCurrentUserByKey(String key);
+
+
+    /**
+     * 设置当前用户
+     *
+     * @param key
+     * @param user
+     */
+    void setCurrentUser(String key, Object user);
+
+}

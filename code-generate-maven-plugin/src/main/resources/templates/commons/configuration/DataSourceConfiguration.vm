@@ -1,0 +1,48 @@
+package ${context.packageName}.configuration;
+
+
+import org.seed.mybatis.springboot.scatter.EnableDataScatter;
+import org.seed.mybatis.springboot.scatter.RoutingDataSource;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
+
+import java.util.HashMap;
+import java.util.Map;
+
+
+@EnableDataScatter
+@Configuration
+public class DataSourceConfiguration {
+
+
+    @Bean(name = "defaultDataSourceProperties")
+    @ConfigurationProperties(prefix = "spring.datasource.default")
+    public DataSourceProperties defaultDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+    @Bean(name = "otherDataSourceProperties")
+    @ConfigurationProperties(prefix = "spring.datasource.other")
+    public DataSourceProperties otherDataSourceProperties() {
+        return new DataSourceProperties();
+    }
+
+
+    @Primary
+    @Bean
+    public RoutingDataSource routingDataSource(@Qualifier("defaultDataSourceProperties") DataSourceProperties defaultDataSourceProperties,
+                                               @Qualifier("otherDataSourceProperties") DataSourceProperties otherDataSourceProperties) {
+        RoutingDataSource routingDataSource = new RoutingDataSource();
+        routingDataSource.setDefaultTargetDataSource(defaultDataSourceProperties.initializeDataSourceBuilder().build());
+        Map<Object, Object> dataSourceMap = new HashMap<>();
+        dataSourceMap.put("default", defaultDataSourceProperties.initializeDataSourceBuilder().build());
+        dataSourceMap.put("other", otherDataSourceProperties.initializeDataSourceBuilder().build());
+        routingDataSource.setTargetDataSources(dataSourceMap);
+        return routingDataSource;
+    }
+
+}
